@@ -1,10 +1,10 @@
 {
-  "name": "cmux-pm",
+  "name": "trafficcontrol",
   "version": "0.1.0",
-  "description": "A project-manager Claude Code session that starts, watches and closes parallel worker sessions in cmux.",
+  "description": "Air traffic control for Claude Code: a project-manager Claude Code session that starts, watches and closes parallel worker sessions in cmux.",
   "type": "module",
   "bin": {
-    "cmux-pm": "bin/cmux-pm.mjs"
+    "trafficcontrol": "bin/trafficcontrol.mjs"
   },
   "files": [
     "bin",
@@ -21,11 +21,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sergionahas/cmux-pm.git"
+    "url": "git+https://github.com/sergionahas/trafficcontrol.git"
   },
-  "homepage": "https://github.com/sergionahas/cmux-pm#readme",
+  "homepage": "https://github.com/sergionahas/trafficcontrol#readme",
   "bugs": {
-    "url": "https://github.com/sergionahas/cmux-pm/issues"
+    "url": "https://github.com/sergionahas/trafficcontrol/issues"
   },
   "keywords": [
     "claude",
@@ -35,7 +35,8 @@
     "parallel",
     "project-manager",
     "terminal",
-    "cli"
+    "cli",
+    "trafficcontrol"
   ],
   "author": "Sergio Nahas",
   "license": "MIT"

@@ -1,12 +1,14 @@
-# cmux-pm
+# trafficcontrol 🛫
 
-[![CI](https://github.com/sergionahas/cmux-pm/actions/workflows/ci.yml/badge.svg)](https://github.com/sergionahas/cmux-pm/actions/workflows/ci.yml)
-[![Secret scan](https://github.com/sergionahas/cmux-pm/actions/workflows/secrets.yml/badge.svg)](https://github.com/sergionahas/cmux-pm/actions/workflows/secrets.yml)
+*Air traffic control for your Claude Code sessions.*
 
-**Run a project as parallel Claude Code sessions, managed from one chat.** Ask a PM session to start five tickets; it opens five workers in cmux, watches them, tells you in one line when each is done or stuck, and cleans up after them.
+[![CI](https://github.com/sergionahas/trafficcontrol/actions/workflows/ci.yml/badge.svg)](https://github.com/sergionahas/trafficcontrol/actions/workflows/ci.yml)
+[![Secret scan](https://github.com/sergionahas/trafficcontrol/actions/workflows/secrets.yml/badge.svg)](https://github.com/sergionahas/trafficcontrol/actions/workflows/secrets.yml)
+
+**Run a project as parallel Claude Code sessions, managed from one chat.** You're in the tower. Ask the PM to clear five tickets for takeoff; it opens five workers in cmux, keeps them on radar, tells you in one line when each one lands or needs help, and clears the runway after them.
 
 ```bash
-npx github:sergionahas/cmux-pm init
+npx trafficcontrol init
 ```
 
 You talk to a single **PM** session. It never does the work itself. For each ticket it starts a **worker**: a separate Claude Code session in its own [cmux](https://cmux.dev) workspace. When a worker finishes or gets stuck, it prints one `STATUS:` line, and a small watcher types that line into the PM's chat. The PM answers in one line ("ABC-153 done: <PR url>") and closes the worker. An overview pane next to the PM shows everything at a glance.
@@ -54,21 +56,21 @@ You talk to a single **PM** session. It never does the work itself. For each tic
 
 ## Setup
 
-Run this from a cmux terminal, in the folder where your project's repos live:
+Run this from a cmux terminal (the tower), in the folder where your project's repos live:
 
 ```bash
-npx github:sergionahas/cmux-pm init
+npx trafficcontrol init
 ```
 
-or from a clone:
+or straight from GitHub, `npx github:sergionahas/trafficcontrol init`, or from a clone:
 
 ```bash
-git clone https://github.com/sergionahas/cmux-pm.git && ./cmux-pm/install.sh
+git clone https://github.com/sergionahas/trafficcontrol.git && ./trafficcontrol/install.sh
 ```
 
 It asks a few questions (project name, repos to watch, ticket prefix, where tickets live), then:
 
-1. copies the tooling into a PM directory (default `<workdir>/.cmux-pm/`),
+1. copies the tooling into a PM directory (default `<workdir>/.trafficcontrol/`),
 2. writes `pm.config.json` and `worker-rules.md` there,
 3. installs the PM skill as `~/.claude/skills/<project>-pm/SKILL.md`, filled in from the config,
 4. turns the current cmux workspace into the PM workspace (overview left, PM right).
@@ -76,7 +78,7 @@ It asks a few questions (project name, repos to watch, ticket prefix, where tick
 Every question has a flag, so it can run unattended:
 
 ```bash
-npx github:sergionahas/cmux-pm init --yes --workdir ~/acme --project Acme \
+npx trafficcontrol init --yes --workdir ~/acme --project Acme \
   --repos acme/app,acme/api --prefix ABC --tracker "Linear (the linear MCP server)" --owner Sam
 ```
 
@@ -142,7 +144,7 @@ node overview.mjs --once                # print the overview once
 The usage bars reuse the Claude sign-in you already have in Claude Code. There's no separate login and no API key.
 
 - `usage.mjs` reads Claude Code's OAuth token locally, from the macOS Keychain item `Claude Code-credentials` (or `~/.claude/.credentials.json` where there is no Keychain).
-- The token goes in one place only: the `Authorization` header of a request to `api.anthropic.com/api/oauth/usage`, the same Anthropic endpoint Claude Code's own `/usage` calls. It is never sent to any other host, and cmux-pm has no telemetry or server of its own.
+- The token goes in one place only: the `Authorization` header of a request to `api.anthropic.com/api/oauth/usage`, the same Anthropic endpoint Claude Code's own `/usage` calls. It is never sent to any other host, and trafficcontrol has no telemetry or server of its own.
 - The token is only held in memory for that request. It is never logged, printed, or written to disk.
 - Only the response (percentages and reset times, no credentials) is cached, in `state/usage.json`, and refreshed at most once a minute.
 - macOS may ask once whether `security` can read the Keychain item. Say no, or sign out of Claude Code, and the bars show "usage unavailable"; everything else works.
@@ -157,17 +159,17 @@ This endpoint isn't a public API and may change. If it does, the bars show "usag
 2. Delete the PM directory and the skill:
 
 ```bash
-rm -rf <workdir>/.cmux-pm            # or the --dir you chose
+rm -rf <workdir>/.trafficcontrol            # or the --dir you chose
 rm -rf ~/.claude/skills/<skill>      # e.g. ~/.claude/skills/acme-pm
 ```
 
-Nothing else is installed: `npx` keeps only its download cache, and cmux-pm doesn't touch your shell profile, Claude Code settings or credentials.
+Nothing else is installed: `npx` keeps only its download cache, and trafficcontrol doesn't touch your shell profile, Claude Code settings or credentials.
 
 ## Security
 
 - This repo git-ignores `state/`, `pm.config.json`, `.env*` and logs; the PM directory `init` creates git-ignores `state/`, `.env*` and logs.
 - Every push and pull request runs [gitleaks](https://github.com/gitleaks/gitleaks) over the full git history ([workflow](.github/workflows/secrets.yml)).
-- Found a problem? Open an issue, or for anything sensitive, a [private security advisory](https://github.com/sergionahas/cmux-pm/security/advisories/new).
+- Found a problem? Open an issue, or for anything sensitive, a [private security advisory](https://github.com/sergionahas/trafficcontrol/security/advisories/new).
 
 ## License
 
