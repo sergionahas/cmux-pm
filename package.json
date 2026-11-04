@@ -1,10 +1,10 @@
 {
-  "name": "trafficcontrol",
+  "name": "staffer",
   "version": "0.1.0",
-  "description": "Air traffic control for Claude Code: a project-manager Claude Code session that starts, watches and closes parallel worker sessions in cmux.",
+  "description": "A chief of staff for Claude Code: a project-manager Claude Code session that starts, watches and closes parallel worker sessions in cmux.",
   "type": "module",
   "bin": {
-    "trafficcontrol": "bin/trafficcontrol.mjs"
+    "staffer": "bin/staffer.mjs"
   },
   "files": [
     "bin",
@@ -21,11 +21,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sergionahas/trafficcontrol.git"
+    "url": "git+https://github.com/sergionahas/staffer.git"
   },
-  "homepage": "https://github.com/sergionahas/trafficcontrol#readme",
+  "homepage": "https://github.com/sergionahas/staffer#readme",
   "bugs": {
-    "url": "https://github.com/sergionahas/trafficcontrol/issues"
+    "url": "https://github.com/sergionahas/staffer/issues"
   },
   "keywords": [
     "claude",
@@ -36,7 +36,7 @@
     "project-manager",
     "terminal",
     "cli",
-    "trafficcontrol"
+    "staffer"
   ],
   "author": "Sergio Nahas",
   "license": "MIT"

@@ -118,7 +118,7 @@ function render(rows) {
   }
 
   out.push("", `${paint("bold", "OPEN PRs")} ${paint("dim", REPOS.map((r) => r.split("/")[1]).join(", ") || "no repos configured")}`);
-  if (!prs.length) out.push(paint("dim", REPOS.length ? "  none" : "  add repos to pm.config.json"));
+  if (!prs.length) out.push(paint("dim", REPOS.length ? "  none" : "  add repos to staffer.config.json"));
   for (const p of prs) out.push(clip(`  ${paint("dim", `${p.repo}#${p.number}`)} ${p.title} ${paint("dim", ago(p.updatedAt))}`, W));
 
   out.push("", ...doneSection(W));

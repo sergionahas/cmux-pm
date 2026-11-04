@@ -1,7 +1,8 @@
 # runtime state and local config (never commit)
 state/
+staffer.config.json
 pm.config.json
-.trafficcontrol/
+.staffer/
 
 # secrets
 .env
