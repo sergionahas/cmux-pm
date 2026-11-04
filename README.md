@@ -1,6 +1,13 @@
 # cmux-pm
 
-Run a project as parallel Claude Code sessions, managed from one chat.
+[![CI](https://github.com/sergionahas/cmux-pm/actions/workflows/ci.yml/badge.svg)](https://github.com/sergionahas/cmux-pm/actions/workflows/ci.yml)
+[![Secret scan](https://github.com/sergionahas/cmux-pm/actions/workflows/secrets.yml/badge.svg)](https://github.com/sergionahas/cmux-pm/actions/workflows/secrets.yml)
+
+**Run a project as parallel Claude Code sessions, managed from one chat.** Ask a PM session to start five tickets; it opens five workers in cmux, watches them, tells you in one line when each is done or stuck, and cleans up after them.
+
+```bash
+npx github:sergionahas/cmux-pm init
+```
 
 You talk to a single **PM** session. It never does the work itself. For each ticket it starts a **worker**: a separate Claude Code session in its own [cmux](https://cmux.dev) workspace. When a worker finishes or gets stuck, it prints one `STATUS:` line, and a small watcher types that line into the PM's chat. The PM answers in one line ("ABC-153 done: <PR url>") and closes the worker. An overview pane next to the PM shows everything at a glance.
 
@@ -50,13 +57,13 @@ You talk to a single **PM** session. It never does the work itself. For each tic
 Run this from a cmux terminal, in the folder where your project's repos live:
 
 ```bash
-npx github:<owner>/cmux-pm init
+npx github:sergionahas/cmux-pm init
 ```
 
 or from a clone:
 
 ```bash
-git clone git@github.com:<owner>/cmux-pm.git && ./cmux-pm/install.sh
+git clone https://github.com/sergionahas/cmux-pm.git && ./cmux-pm/install.sh
 ```
 
 It asks a few questions (project name, repos to watch, ticket prefix, where tickets live), then:
@@ -69,7 +76,7 @@ It asks a few questions (project name, repos to watch, ticket prefix, where tick
 Every question has a flag, so it can run unattended:
 
 ```bash
-npx github:<owner>/cmux-pm init --yes --workdir ~/acme --project Acme \
+npx github:sergionahas/cmux-pm init --yes --workdir ~/acme --project Acme \
   --repos acme/app,acme/api --prefix ABC --tracker "Linear (the linear MCP server)" --owner Sam
 ```
 
@@ -130,13 +137,37 @@ node overview.mjs --once                # print the overview once
 | `config.mjs` | Reads `pm.config.json` |
 | `state/` | `sessions.json` (open), `closed.json` (closed, kept 7 days), `events.log`, prompts, `watch.log`. Local only, git-ignored |
 
-**Usage bars.** `usage.mjs` reads the OAuth token Claude Code already stores (macOS Keychain item `Claude Code-credentials`, or `~/.claude/.credentials.json`) and calls the same endpoint `/usage` uses. The token is only held in memory for that one request; it's never logged or written. The response (no credentials in it) is cached in `state/usage.json` and fetched at most once a minute. This endpoint isn't a public API and may change; if it does, the bars show "usage unavailable" and everything else keeps working.
+### Your Claude sign-in and the usage bars
+
+The usage bars reuse the Claude sign-in you already have in Claude Code. There's no separate login and no API key.
+
+- `usage.mjs` reads Claude Code's OAuth token locally, from the macOS Keychain item `Claude Code-credentials` (or `~/.claude/.credentials.json` where there is no Keychain).
+- The token goes in one place only: the `Authorization` header of a request to `api.anthropic.com/api/oauth/usage`, the same Anthropic endpoint Claude Code's own `/usage` calls. It is never sent to any other host, and cmux-pm has no telemetry or server of its own.
+- The token is only held in memory for that request. It is never logged, printed, or written to disk.
+- Only the response (percentages and reset times, no credentials) is cached, in `state/usage.json`, and refreshed at most once a minute.
+- macOS may ask once whether `security` can read the Keychain item. Say no, or sign out of Claude Code, and the bars show "usage unavailable"; everything else works.
+
+This endpoint isn't a public API and may change. If it does, the bars show "usage unavailable" and the rest keeps working.
 
 **Token counts** come from each worker's Claude Code transcript under `~/.claude/projects/`, matched by the session name `spawn.sh` gives it (`<ticket> <title>`).
 
 ## Uninstall
 
-Close the PM workspace in cmux, then delete the PM directory and `~/.claude/skills/<skill>/`.
+1. Close the PM workspace and any worker workspaces in cmux.
+2. Delete the PM directory and the skill:
+
+```bash
+rm -rf <workdir>/.cmux-pm            # or the --dir you chose
+rm -rf ~/.claude/skills/<skill>      # e.g. ~/.claude/skills/acme-pm
+```
+
+Nothing else is installed: `npx` keeps only its download cache, and cmux-pm doesn't touch your shell profile, Claude Code settings or credentials.
+
+## Security
+
+- This repo git-ignores `state/`, `pm.config.json`, `.env*` and logs; the PM directory `init` creates git-ignores `state/`, `.env*` and logs.
+- Every push and pull request runs [gitleaks](https://github.com/gitleaks/gitleaks) over the full git history ([workflow](.github/workflows/secrets.yml)).
+- Found a problem? Open an issue, or for anything sensitive, a [private security advisory](https://github.com/sergionahas/cmux-pm/security/advisories/new).
 
 ## License
 

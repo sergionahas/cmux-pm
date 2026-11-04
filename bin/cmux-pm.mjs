@@ -107,7 +107,7 @@ async function init(args) {
     if (f.endsWith(".sh")) chmodSync(join(dir, f), 0o755);
   }
   copyFileSync(join(ROOT, "README.md"), join(dir, "README.md"));
-  writeFileSync(join(dir, ".gitignore"), "state/\n");
+  writeFileSync(join(dir, ".gitignore"), "state/\n.env\n.env.*\n*.log\n");
 
   // 2. config and rules
   writeFileSync(join(dir, "pm.config.json"), JSON.stringify(config, null, 2) + "\n");

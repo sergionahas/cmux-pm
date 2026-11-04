@@ -3,8 +3,40 @@
   "version": "0.1.0",
   "description": "A project-manager Claude Code session that starts, watches and closes parallel worker sessions in cmux.",
   "type": "module",
-  "bin": { "cmux-pm": "bin/cmux-pm.mjs" },
-  "files": ["bin", "src", "templates", "README.md", "LICENSE"],
-  "engines": { "node": ">=18" },
+  "bin": {
+    "cmux-pm": "bin/cmux-pm.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "sh test/smoke.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergionahas/cmux-pm.git"
+  },
+  "homepage": "https://github.com/sergionahas/cmux-pm#readme",
+  "bugs": {
+    "url": "https://github.com/sergionahas/cmux-pm/issues"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cmux",
+    "agents",
+    "parallel",
+    "project-manager",
+    "terminal",
+    "cli"
+  ],
+  "author": "Sergio Nahas",
   "license": "MIT"
 }
