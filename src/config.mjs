@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-// Reads pm.config.json, which sits next to this file (init writes it there).
+// Reads staffer.config.json, which sits next to this file (init writes it there).
 //   node config.mjs get <key>       print one value (arrays one per line); used by the shell scripts
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const HOME_DIR = dirname(fileURLToPath(import.meta.url));
-export const CONFIG_PATH = join(HOME_DIR, "pm.config.json");
+const LEGACY = join(HOME_DIR, "pm.config.json"); // name before the rename; rerun init to migrate
+export const CONFIG_PATH = !existsSync(join(HOME_DIR, "staffer.config.json")) && existsSync(LEGACY) ? LEGACY : join(HOME_DIR, "staffer.config.json");
 
 export const DEFAULTS = {
   project: "My project",
@@ -28,7 +29,7 @@ const expand = (p) => (typeof p === "string" && p.startsWith("~/") ? join(homedi
 export function loadConfig() {
   let raw = {};
   try { raw = JSON.parse(readFileSync(CONFIG_PATH, "utf8")); } catch (e) {
-    if (e.code !== "ENOENT") throw new Error(`pm.config.json: ${e.message}`);
+    if (e.code !== "ENOENT") throw new Error(`${CONFIG_PATH}: ${e.message}`);
   }
   const c = { ...DEFAULTS, ...raw };
   c.workdir = expand(c.workdir);

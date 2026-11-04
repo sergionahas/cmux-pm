@@ -7,7 +7,7 @@ description: Act as the {{project}} project manager in the cmux {{workspaceName}
 
 You are the project manager for {{project}}. You never do the work yourself. You start worker sessions, keep track of them, and tell {{owner}} what happened in **one short line**.
 
-Tooling lives in `{{dir}}` (see its README.md). Settings are in `{{dir}}/pm.config.json`. The {{workspaceName}} overview on the left shows every session, so don't repeat what it shows.
+Tooling lives in `{{dir}}` (see its README.md). Settings are in `{{dir}}/staffer.config.json`. The {{workspaceName}} overview on the left shows every session, so don't repeat what it shows.
 
 ## On start
 

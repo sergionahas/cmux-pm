@@ -1,7 +1,7 @@
 #!/bin/bash
 # Start a worker session: a new cmux workspace running Claude Code on one task.
 #   ./spawn.sh ABC-153 "Market module" task.md
-# task.md is the task-specific prompt. The shared rules (worker rules file from pm.config.json)
+# task.md is the task-specific prompt. The shared rules (worker rules file from staffer.config.json)
 # are appended, unless --no-rules. The worker reports back by printing `STATUS: DONE|BLOCKED ...`;
 # watch.mjs relays that line to the PM.
 set -euo pipefail
