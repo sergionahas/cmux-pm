@@ -1,4 +1,18 @@
+# runtime state and local config (never commit)
 state/
+pm.config.json
+.cmux-pm/
+
+# secrets
+.env
+.env.*
+*.pem
+*.key
+.credentials.json
+
+# logs and build output
+*.log
+logs/
+*.tgz
 node_modules/
 .DS_Store
-pm.config.json
