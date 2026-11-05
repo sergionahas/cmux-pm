@@ -1,20 +1,16 @@
 #!/usr/bin/env node
 // Relays what worker sessions report to the PM session, so every result comes back to one chat.
-// Every 10 s, for each workspace in the PM's cmux window: read its screen, find a final
+// Every 10 s, for each worker spawn.sh registered in state/sessions.json: read its screen, find a final
 // `STATUS: DONE|BLOCKED ...` line, and when it is new, log it and type one line into the PM:
 //   [worker ABC-153] DONE https://github.com/...
-// Also notices workers that start (any new workspace) or disappear (moved to the closed list, like
-// close.sh does). Closed workspaces are never read again.
+// Only workspaces spawn.sh registered are tracked. Anything else cmux lists in the window (your own
+// shells, other tools' workspaces) is ignored: never read, never added. Workers that disappear are
+// moved to the closed list, like close.sh does. Closed workspaces are never read again.
 // Runs in the background of the overview pane (cmux.sh). Log: state/watch.log.
-import { cmux, say, screen, workspaces } from "./cmuxlib.mjs";
-import { config } from "./config.mjs";
-import { close, pm, recentlyClosed, sessions, upsert, event } from "./state.mjs";
+import { say, screen, workspaces } from "./cmuxlib.mjs";
+import { close, pm, sessions, upsert, event } from "./state.mjs";
 
 const EVERY_MS = 10_000;
-const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const TICKET = config.ticketPrefix
-  ? new RegExp(`\\b(${esc(config.ticketPrefix)}-\\d+)\\b`)
-  : /\b([A-Z][A-Z0-9]{1,9}-\d+)\b/;
 
 /** The last STATUS line on screen, with wrapped continuation lines joined. */
 export function lastStatus(text) {
@@ -40,20 +36,13 @@ async function tick() {
   const list = await workspaces(me.window);
   if (!list) return;
   const known = sessions();
-  const gone = recentlyClosed(); // closed by close.sh; cmux may still list them for a moment
   const live = new Set();
 
-  for (const { ref, name } of list) {
+  for (const { ref } of list) {
     if (ref === me.workspace) continue;
     live.add(ref);
-    if (!known[ref] && gone.has(ref)) continue; // closed: don't read its screen or re-add it
-    const ticket = name.match(TICKET)?.[1] ?? ref;
-    const title = name.replace(/^[^\w]*/, "").replace(TICKET, "").replace(/^[\s·:-]+/, "").trim() || name;
-    let s = known[ref];
-    if (!s) {
-      s = upsert(ref, { ticket, title, status: "working", detail: "", started: new Date().toISOString() });
-      event(`seen ${ticket} · ${title} (${ref})`);
-    }
+    const s = known[ref];
+    if (!s) continue; // not started by spawn.sh: not ours, never read or adopt it
 
     const text = await screen(ref);
     if (text === null || !sessions()[ref]) continue; // gone, or closed by close.sh while we read

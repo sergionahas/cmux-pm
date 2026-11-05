@@ -54,10 +54,6 @@ export function close(ws) {
   return rec;
 }
 
-/** Workspaces closed in the last `ms`: cmux can still list them for a moment after close. */
-export const recentlyClosed = (ms = 60_000) =>
-  new Set(closedSessions().filter((c) => Date.now() - Date.parse(c.closed) < ms).map((c) => c.ref));
-
 export function upsert(ws, patch) {
   const s = sessions();
   s[ws] = { ...(s[ws] ?? { started: new Date().toISOString(), status: "working" }), ...patch, updated: new Date().toISOString() };
